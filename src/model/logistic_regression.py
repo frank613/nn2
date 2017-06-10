@@ -4,9 +4,10 @@ import sys
 import logging
 
 import numpy as np
+import matplotlib.pyplot as plt
 
 from util.activation_functions import Activation
-from model.classifier import Classifier
+from classifier import Classifier
 
 logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
                     level=logging.DEBUG,
@@ -47,7 +48,7 @@ class LogisticRegression(Classifier):
         # Initialize the weight vector with small values
         self.weight = 0.01*np.random.randn(self.trainingSet.input.shape[1])
 
-    def train(self, verbose=True):
+    def train(self, verbose=False):
         """Train the Logistic Regression.
 
         Parameters
@@ -55,12 +56,48 @@ class LogisticRegression(Classifier):
         verbose : boolean
             Print logging messages with validation accuracy if verbose is True.
         """
+        from util.loss_functions import DifferentError
+        loss = DifferentError()
 
+        learned = False
+        iteration = 0
+        yzhou = []
+        while not learned:
+            totalError = 0
+
+            grad = np.zeros(self.trainingSet.input[0].shape)
+            for input, label in zip(self.trainingSet.input,
+                                    self.trainingSet.label):
+                output = self.fire(input)
+
+                error = loss.calculateError(label, output)
+                grad=grad+error*input
+                if label==1 and output < 0.5:
+                    totalError += 1
+                if label==0 and output >= 0.5:
+                    totalError += 1
+
+            yzhou.append(totalError)
+            self.updateWeights(grad)
+            iteration += 1
+
+            if verbose:
+                logging.info("Epoch: %i; Error: %i", iteration, totalError)
+
+            if totalError == 0 or iteration >= self.epochs:
+                # stop criteria is reached
+                xzhou=np.arange(iteration)
+                plt.plot(xzhou,np.array(yzhou))
+                plt.title("Lerning rate %f"%self.learningRate);
+                plt.xlabel('epoch')
+                plt.ylabel('Error')
+                plt.show()
+                learned = True
         pass
         
     def classify(self, testInstance):
         """Classify a single instance.
-
+f
         Parameters
         ----------
         testInstance : list of floats
@@ -70,6 +107,7 @@ class LogisticRegression(Classifier):
         bool :
             True if the testInstance is recognized as a 7, False otherwise.
         """
+        return self.fire(testInstance) >= 0.5
         pass
 
     def evaluate(self, test=None):
@@ -92,6 +130,7 @@ class LogisticRegression(Classifier):
         return list(map(self.classify, test))
 
     def updateWeights(self, grad):
+        self.weight += self.learningRate * grad
         pass
 
     def fire(self, input):

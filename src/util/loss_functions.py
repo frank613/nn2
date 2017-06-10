@@ -47,6 +47,7 @@ class DifferentError(Error):
 
     def calculateError(self, target, output):
         # It is the numbers of differences between target and output
+
         return target - output
 
 
@@ -85,6 +86,7 @@ class BinaryCrossEntropyError(Error):
         self.errorString = 'bce'
 
     def calculateError(self, target, output):
+        return -target*np.log(output)-(1-target)*np.log(1-output)
         pass
 
 

@@ -2,7 +2,7 @@
 
 import numpy as np
 from numpy.random import shuffle
-from data.data_set import DataSet
+from data_set import DataSet
 
 
 class MNISTSeven(object):

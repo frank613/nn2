@@ -6,6 +6,7 @@ Activation functions which can be used within neurons.
 
 from numpy import exp
 from numpy import divide
+from numpy import float128
 
 
 class Activation:
@@ -19,6 +20,7 @@ class Activation:
 
     @staticmethod
     def sigmoid(netOutput):
+        return 1/(1+ exp(-netOutput))
         pass
     @staticmethod
     def sigmoidPrime(netOutput):
